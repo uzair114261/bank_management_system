@@ -1,6 +1,7 @@
 from django import  forms
 from .models import  Account
 from banks.models import Bank
+from django.contrib.auth.models import User
 
 class AccountForm(forms.ModelForm):
     class Meta:
@@ -8,13 +9,29 @@ class AccountForm(forms.ModelForm):
         fields = ['bank', 'username', 'balance']
 
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control'}),
             'balance': forms.TextInput(attrs={'class': 'form-control'}),
         }
-
+    username = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        to_field_name='username',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     bank = forms.ModelChoiceField(
         queryset=Bank.objects.all(),
         to_field_name='bank_name',
         required=True,
         widget=forms.Select(attrs={'class': 'form-control'})
     ),
+
+class SearchForm(forms.ModelForm):
+    class Meta:
+        model = Account
+        fields = ['username']
+
+    username = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        to_field_name='id',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control', 'name': 'search_username'})
+    )

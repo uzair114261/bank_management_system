@@ -1,5 +1,6 @@
+from django.contrib.admin.templatetags.admin_list import search_form
 from django.shortcuts import redirect
-from .forms import  AccountForm
+from .forms import  AccountForm, SearchForm
 from .models import Account
 from django.views.generic import  ListView
 from banks.models import Bank
@@ -14,16 +15,19 @@ class AccountView(LoginRequiredMixin,ListView):
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
-        print(request.user)
         form = AccountForm()
+        search_form = SearchForm()
         account = ""
         if request.method == "GET":
-            search_username = request.GET.get("search_username",'')
-            account = Account.objects.filter(username__icontains=search_username).select_related('bank')
-
+            search_username = request.GET.get("username", '')
+            if search_username:
+                account = Account.objects.filter(username=search_username).select_related('bank','username')
+            else:
+                account = Account.objects.all().select_related('bank','username')
         context = self.get_context_data()
         context['accounts'] = account
         context['form'] = form
+        context['search_form'] = search_form
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
