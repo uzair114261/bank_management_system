@@ -1,18 +1,25 @@
 from django.shortcuts import redirect
 from .forms import  AccountForm
-from .models import Accounts
+from .models import Account
 from django.views.generic import  ListView
+from banks.models import Bank
 
 # Create your views here.
 class AccountView(ListView):
-    model = Accounts
+    model = Account
     template_name = 'accounts/index.html'
     context_object_name = 'accounts'
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
         form = AccountForm()
+        account = ""
+        if request.method == "GET":
+            search_username = request.GET.get("search_username",'')
+            account = Account.objects.filter(username__icontains=search_username).select_related('bank')
+
         context = self.get_context_data()
+        context['accounts'] = account
         context['form'] = form
         return self.render_to_response(context)
 

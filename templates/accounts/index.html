@@ -11,6 +11,10 @@
         <button type="submit">Add new Account</button>
     </form>
 
+    <form method="GET">
+        <input type="text" name="search_username" />
+        <button>Search</button>
+    </form>
     <table>
         <thead>
         <tr>
@@ -25,10 +29,12 @@
             <tr>
                 <td>{{forloop.counter}}</td>
                 <td>{{account.username}}</td>
-                <td>{{account.account_bank}}</td>
-                <td>{{account.account_balance}}</td>
+                <td>{{account.bank.bank_name}}</td>
+                <td>{{account.balance}}</td>
             </tr>
         {% endfor %}
+
+
         </tbody>
     </table>
 </body>

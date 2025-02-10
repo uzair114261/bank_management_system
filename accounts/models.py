@@ -1,10 +1,11 @@
 from django.db import models
+from banks.models import  Bank
 
 # Create your models here.
-class Accounts(models.Model):
-    account_bank = models.CharField(max_length=255)
+class Account(models.Model):
+    bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='bank')
     username = models.CharField(max_length=255)
-    account_balance = models.PositiveIntegerField()
+    balance = models.PositiveIntegerField()
 
     def __str__(self):
-        return f'{self.account_bank} for {self.username}'
+        return f'{self.bank} for {self.username}'

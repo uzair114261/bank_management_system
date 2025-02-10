@@ -1,12 +1,20 @@
 from django import  forms
-from .models import  Accounts
+from .models import  Account
+from banks.models import Bank
 
 class AccountForm(forms.ModelForm):
     class Meta:
-        model = Accounts
-        fields = ['account_bank', 'username', 'account_balance']
+        model = Account
+        fields = ['bank', 'username', 'balance']
+
         widgets = {
-            'account_bank': forms.TextInput(attrs={'class': 'form-control'}),
             'username': forms.TextInput(attrs={'class': 'form-control'}),
-            'account_balance': forms.TextInput(attrs={'class': 'form-control'}),
+            'balance': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    bank = forms.ModelChoiceField(
+        queryset=Bank.objects.all(),
+        to_field_name='bank_name',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    ),
