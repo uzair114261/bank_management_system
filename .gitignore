@@ -8,8 +8,8 @@ __pycache__/
 *.env
 
 # Ignore Django migration files
-**/migrations/*.py
-!**/migrations/__init__.py
+#**/migrations/*.py
+#!**/migrations/__init__.py
 
 # Ignore SQLite database files
 *.sqlite3
