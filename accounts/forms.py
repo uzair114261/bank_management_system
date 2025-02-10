@@ -6,12 +6,12 @@ from django.contrib.auth.models import User
 class AccountForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ['bank', 'username', 'balance']
+        fields = ['bank', 'user', 'balance']
 
         widgets = {
             'balance': forms.TextInput(attrs={'class': 'form-control'}),
         }
-    username = forms.ModelChoiceField(
+    user = forms.ModelChoiceField(
         queryset=User.objects.all(),
         to_field_name='username',
         required=True,
@@ -23,15 +23,3 @@ class AccountForm(forms.ModelForm):
         required=True,
         widget=forms.Select(attrs={'class': 'form-control'})
     ),
-
-class SearchForm(forms.ModelForm):
-    class Meta:
-        model = Account
-        fields = ['username']
-
-    username = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        to_field_name='id',
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control', 'name': 'search_username'})
-    )

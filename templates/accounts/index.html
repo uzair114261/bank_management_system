@@ -13,7 +13,7 @@
     </form>
 
     <form method="GET">
-        {{search_form}}
+        <input type="text" name="search_name" />
         <button>Search</button>
     </form>
     <table>
@@ -29,7 +29,7 @@
         {% for account in accounts %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{account.username}}</td>
+                <td>{{account.user.first_name}} {{account.user.last_name}}</td>
                 <td>{{account.bank.bank_name}}</td>
                 <td>{{account.balance}}</td>
             </tr>
