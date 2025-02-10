@@ -3,15 +3,18 @@ from .forms import  AccountForm
 from .models import Account
 from django.views.generic import  ListView
 from banks.models import Bank
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
-class AccountView(ListView):
+class AccountView(LoginRequiredMixin,ListView):
+    login_url = 'login'
     model = Account
     template_name = 'accounts/index.html'
     context_object_name = 'accounts'
 
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
+        print(request.user)
         form = AccountForm()
         account = ""
         if request.method == "GET":

@@ -2,9 +2,12 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView
 from .forms import BankForm
 from .models import Bank
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 # Create your views here.
-class BankView(ListView):
+class BankView(LoginRequiredMixin, ListView):
+    login_url = 'login'
     model = Bank
     template_name = 'banks/index.html'
     context_object_name = 'banks'
