@@ -21,5 +21,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('banks/', include('banks.urls')),
     path('accounts/', include('accounts.urls')),
-    path('auth/', include('auth.urls'))
+    path('auth/', include('auth.urls')),
+#     Base routes for APIs
+    path('api/banks/', include('banks.api.urls')),
+    path('api/auth/', include('auth.api.urls')),
+    path('api/accounts/', include('accounts.api.urls'))
 ]
