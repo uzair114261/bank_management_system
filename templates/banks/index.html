@@ -5,6 +5,7 @@
     <title>List of all banks</title>
 </head>
 <body>
+<a href="{% url 'logout' %}">Logout</a>
     <form method="POST">
         {% csrf_token %}
         {{form}}

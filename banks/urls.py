@@ -1,6 +1,7 @@
 from django.urls import  path
 from . import  views
+from django.views.decorators.cache import never_cache
 
 urlpatterns = [
-    path('', views.BankView.as_view(), name='banks_list'),
+    path('', never_cache(views.BankView.as_view()), name='banks_list'),
 ]

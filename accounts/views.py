@@ -3,9 +3,12 @@ from .forms import  AccountForm
 from .models import Account
 from django.views.generic import  ListView
 from banks.models import Bank
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 # Create your views here.
-class AccountView(ListView):
+class AccountView(LoginRequiredMixin,ListView):
+    login_url = 'login'
     model = Account
     template_name = 'accounts/index.html'
     context_object_name = 'accounts'
@@ -15,9 +18,13 @@ class AccountView(ListView):
         form = AccountForm()
         account = ""
         if request.method == "GET":
-            search_username = request.GET.get("search_username",'')
-            account = Account.objects.filter(username__icontains=search_username).select_related('bank')
-
+            search_name = request.GET.get("search_name", '')
+            if search_name:
+                account = Account.objects.filter(
+                    Q(user__first_name=search_name) | Q(user__last_name=search_name)
+                ).select_related('bank','user')
+            else:
+                account = Account.objects.all().select_related('bank','user')
         context = self.get_context_data()
         context['accounts'] = account
         context['form'] = form

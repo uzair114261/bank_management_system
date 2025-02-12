@@ -5,7 +5,8 @@
     <title>Login</title>
 </head>
 <body>
-    <form>
+    <form method="POST">
+        {% csrf_token %}
         <div>
 <label>Username</label>
             <input type="text" name="username">

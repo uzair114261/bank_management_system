@@ -3,6 +3,6 @@ from .models import  Account
 
 # Register your models here.
 class BankAdmin(admin.ModelAdmin):
-    list_display = ['bank', 'username', 'balance']
+    list_display = ['bank', 'user', 'balance']
 
 admin.site.register(Account, BankAdmin)
