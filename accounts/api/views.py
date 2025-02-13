@@ -65,15 +65,30 @@ class BankAccount(APIView):
                 "error": "You are not authorized to change the balance"
             }, status=status.HTTP_401_UNAUTHORIZED)
 
+    def delete(self, request):
+        bank_id = request.query_params.get('bank_id')
+        bank = self.get_bank(bank_id)
+        account = Account.objects.filter(
+            user=request.user,
+            bank=bank
+        ).select_related('user','bank')
+        if account:
+            account.delete()
+            return Response({
+                "data": "deletion successful"
+            },status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({
+                "error": "No account found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
 
 class AccountDetailView(RetrieveAPIView):
     serializer_class = AccountSerializer
-
-    # By-default RetrieveAPIView do not support multiple lookup fields, will see it by tomorrow
     lookup_field = 'bank_id'
+
     def get_queryset(self):
         bank_id = self.kwargs['bank_id']
         user_id = self.kwargs['user_id']
-
         # Get the queryset filtered by user and bank_id
         return Account.objects.filter(user=user_id, bank__id=bank_id)
