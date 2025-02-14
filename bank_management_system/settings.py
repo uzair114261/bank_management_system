@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'banks',
     'accounts',
+    'authentication',
     'rest_framework',
     'rest_framework.authtoken'
 ]
@@ -57,10 +58,12 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'banks.api.pagination.CustomPageNumberPagination',
+    'PAGE_SIZE': 10
 }
 
-# AUTH_USER_MODEL = 'django.contrib.auth.models.User'
+AUTH_USER_MODEL = 'authentication.User'
 
 ROOT_URLCONF = 'bank_management_system.urls'
 

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import RetrieveAPIView, DestroyAPIView
 from .serializers import UserSerializer
-from django.contrib.auth.models import User
+from ..models import User
 from django.db import IntegrityError
 
 class LoginView(APIView):
