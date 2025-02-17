@@ -8,17 +8,17 @@ from .serializers import  BankSerializer
 from .pagination import CustomPageNumberPagination
 
 # By generic classes
-class BankListGenericView(generics.ListAPIView, generics.CreateAPIView):
+class BankListGenericView(generics.ListCreateAPIView):
     queryset = Bank.objects.all()
     serializer_class = BankSerializer
 
-class BankActionGenericView(generics.RetrieveAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
+class BankActionGenericView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = Bank.objects.all()
     serializer_class = BankSerializer
 
 # BankList via viewset
-class BankListViewSet(viewsets.ModelViewSet):
+class BankViewSet(viewsets.ModelViewSet):
     queryset = Bank.objects.all()
     serializer_class = BankSerializer
 
@@ -26,6 +26,8 @@ class BankListViewSet(viewsets.ModelViewSet):
 class BankAPIView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = BankSerializer(request.data)
+        if serializer.is_valid():
+            serializer.save()
         return Response({
             "data": serializer.data
         }, status=status.HTTP_201_CREATED)

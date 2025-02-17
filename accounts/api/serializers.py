@@ -1,21 +1,35 @@
 from rest_framework import serializers
 from ..models import Account
+from banks.api.serializers import BankSerializer, Bank
+from authentication.api.serializers import UserSerializer
+from authentication.models import User
 
-class AccountSerializer(serializers.ModelSerializer):
-    def get_username(self, obj):
-        return obj.user.get_full_name()
-    bank_name = serializers.ReadOnlyField(source='bank.bank_name', read_only=True)
-    branch_name = serializers.ReadOnlyField(source='bank.branch_name', read_only=True)
-    user_id = serializers.ReadOnlyField(source='user.id', read_only=True)
-    username = serializers.SerializerMethodField("get_username")
+
+class AccountDetailSerializer(serializers.ModelSerializer):
+    bank = BankSerializer()
+    user = UserSerializer()
     class Meta:
         model = Account
-        # fields = "__all__"
-        fields = ['id', 'bank', 'balance', 'bank_name','branch_name','username','user_id']
+        fields = ['id', 'bank', 'balance', 'user']
 
 
-    def update(self, instance, validated_data):
-        if 'balance' in validated_data:
-            instance.balance = validated_data['balance']
-            instance.save()
-            return  instance
+class AccountSerializer(serializers.ModelSerializer):
+    # bank = BankSerializer()
+    # user = UserSerializer()
+    bank = serializers.PrimaryKeyRelatedField(queryset=Bank.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
+
+    class Meta:
+        model = Account
+        fields = ['id', 'bank', 'balance', 'user']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        bank = validated_data.pop('bank')
+
+        account = Account.objects.create(
+            user=user,
+            bank=bank,
+            balance=validated_data['balance']
+        )
+        return account

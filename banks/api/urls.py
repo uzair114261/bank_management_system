@@ -10,5 +10,5 @@ urlpatterns = [
     path('apiview', views.BankAPIView.as_view(), name='bank_apiview')
 ]
 
-router.register(r'list/viewset', views.BankListViewSet, basename='bank_list_viewset')
+router.register(r'list/viewset', views.BankViewSet, basename='bank_list_viewset')
 urlpatterns += router.urls

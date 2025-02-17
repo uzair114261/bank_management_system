@@ -1,38 +1,24 @@
-from django.core.serializers import serialize
-from django.template.context_processors import request
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, AccountDetailSerializer
 from ..models import Account, Bank
 from rest_framework import generics
 from rest_framework import viewsets
 
 # By APIViews
-class BankAccountAPIView(APIView):
-    def get_bank(self, bank_id):
-        try:
-            return Bank.objects.get(id=bank_id)
-        except Bank.DoesNotExist:
-            return None
-
+class AccountAPIView(APIView):
     def get(self, request):
         accounts = Account.objects.filter(user=request.user).select_related('bank', 'user')
-        serializer = AccountSerializer(accounts, many=True)
+        print(accounts.query)
+        serializer = AccountDetailSerializer(accounts, many=True)
         return Response({
             "success": True,
             "data": serializer.data
         }, status=status.HTTP_200_OK)
 
     def post(self, request):
-        bank_id = request.data.get('bank_id')
-        balance = request.data.get('balance')
-        account_data = {
-            'bank': bank_id,
-            'user': request.user.id,
-            'balance': balance
-        }
-        serializer = AccountSerializer(data=account_data)
+        serializer = AccountSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             serializer.save()
             return Response({
@@ -41,25 +27,16 @@ class BankAccountAPIView(APIView):
         else:
             return Response({
                 "error": serializer.errors
-            },status=status.HTTP_404_NOT_FOUND)
+            },status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request):
-        bank_id = request.data.get('bank_id')
-        new_balance = request.data.get('new_balance')
-        bank = self.get_bank(bank_id)
-
+        account_id = request.data.get('account_id')
         account = Account.objects.filter(
-            bank=bank,
-            user=request.user
+            id=account_id
         ).select_related('bank','user').first()
 
         if account and account.user == request.user:
-            serializer = AccountSerializer(account,
-                data={
-                    'balance': new_balance
-                },
-                partial=True
-            )
+            serializer = AccountSerializer(account, data=request.data ,partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response({
@@ -75,11 +52,9 @@ class BankAccountAPIView(APIView):
             }, status=status.HTTP_401_UNAUTHORIZED)
 
     def delete(self, request):
-        bank_id = request.query_params.get('bank_id')
-        bank = self.get_bank(bank_id)
+        account_id = request.query_params.get('account_id')
         account = Account.objects.filter(
-            user=request.user,
-            bank=bank
+            id=account_id
         ).select_related('user','bank')
         if account:
             account.delete()
@@ -93,37 +68,30 @@ class BankAccountAPIView(APIView):
 
 
 # By Generic Views
-class BankAccountGenericView(generics.CreateAPIView, generics.ListAPIView):
+class CreateAccountGenericView(generics.CreateAPIView):
     serializer_class = AccountSerializer
-    def get_queryset(self):
-        return Account.objects.filter(user=self.request.user).select_related('user','bank')
+    queryset = Account.objects.all()
 
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(user=self.request.user)
-        else:
-            print(serializer.errors)
+class ListAccountGenericView(generics.ListAPIView):
+    serializer_class = AccountDetailSerializer
+    lookup_field = 'user_id'
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return  Account.objects.filter(user__id=user_id).select_related('user','bank')
+
 
 
 # By Generic Views
-class AccountActionGenericView(generics.RetrieveAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
-    serializer_class = AccountSerializer
-    lookup_field = 'bank_id'
-
+class AccountActionGenericView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AccountDetailSerializer
+    lookup_field = 'id'
     def get_queryset(self):
-        bank_id = self.kwargs['bank_id']
-        user_id = self.kwargs['user_id']
-        # Get the queryset filtered by user and bank_id
-        return Account.objects.filter(user=user_id, bank__id=bank_id).select_related('user','bank')
+        account_id = self.kwargs['id']
+        # Get the queryset filtered by account_id
+        return Account.objects.filter(id=account_id).select_related('user','bank')
 
 
 # By Viewset
 class BankAccountViewSets(viewsets.ModelViewSet):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(user=self.request.user)
-        else:
-            print(serializer.errors)
