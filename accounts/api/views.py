@@ -10,10 +10,8 @@ from rest_framework import viewsets
 class AccountAPIView(APIView):
     def get(self, request):
         accounts = Account.objects.filter(user=request.user).select_related('bank', 'user')
-        print(accounts.query)
         serializer = AccountDetailSerializer(accounts, many=True)
         return Response({
-            "success": True,
             "data": serializer.data
         }, status=status.HTTP_200_OK)
 
@@ -72,7 +70,7 @@ class CreateAccountGenericView(generics.CreateAPIView):
     serializer_class = AccountSerializer
     queryset = Account.objects.all()
 
-class ListAccountGenericView(generics.ListAPIView):
+class ListAccountGenericAPIView(generics.ListAPIView):
     serializer_class = AccountDetailSerializer
     lookup_field = 'user_id'
     def get_queryset(self):

@@ -24,12 +24,6 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = ['id', 'bank', 'balance', 'user']
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        bank = validated_data.pop('bank')
-
-        account = Account.objects.create(
-            user=user,
-            bank=bank,
-            balance=validated_data['balance']
-        )
+        validated_data['user'] = self.context['request'].user
+        account = super().create(validated_data)
         return account
