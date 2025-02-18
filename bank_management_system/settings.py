@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     'accounts',
     'authentication',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'constance'
 ]
 MIDDLEWARE = [
+    'bank_management_system.middleware.maintenance.MaintenanceModeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,6 +63,12 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'banks.api.pagination.CustomPageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'maintenance_mode': (False, 'Maintenance mode of application'),
 }
 
 AUTH_USER_MODEL = 'authentication.User'
