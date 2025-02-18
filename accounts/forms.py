@@ -1,7 +1,7 @@
 from django import  forms
 from .models import  Account
 from banks.models import Bank
-from django.contrib.auth.models import User
+from authentication.models import User
 
 class AccountForm(forms.ModelForm):
     class Meta:

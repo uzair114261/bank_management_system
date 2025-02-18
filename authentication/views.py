@@ -8,7 +8,7 @@ from django.contrib.auth import logout
 
 # Create your views here.
 class Register(CreateView):
-    template_name = 'auth/register.html'
+    template_name = 'authentication/register.html'
     success_url = reverse_lazy('account_list')
     form_class = UserForm
 
